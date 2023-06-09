@@ -14,7 +14,7 @@ state = {
   };
   
 render() {
-  const {id, webformatURL, largeImageURL} = this.props;
+  const { webformatURL, largeImageURL} = this.props;
 
   return (
     <ImageGalleryItemSt onClick={this.toggleModal}>
