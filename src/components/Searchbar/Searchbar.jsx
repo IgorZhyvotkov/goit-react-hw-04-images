@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import { toast } from 'react-toastify';
 
 import { BsSearch } from 'react-icons/bs';
@@ -9,47 +9,43 @@ import {
   SearchbarInput,
 } from './Searchbar.styled';
 
-class Searchbar extends Component {
-  state = {
-    inputValue: '',
+function Searchbar({ onSubmit }) {
+  const [inputValue, setInputValue] = useState('');
+
+  const onChange = ({ target }) => {
+    setInputValue(target.value.toLowerCase());
   };
 
-  onChange = ({ target }) => {
-    this.setState({ inputValue: target.value.toLowerCase() });
-  };
-
-  onSubmit = e => {
+  const onSubmitSerch = e => {
     e.preventDefault();
 
-    if (this.state.inputValue.trim() === '') {
+    if (inputValue.trim() === '') {
       toast('Oops try again!');
       return;
     }
 
-    this.props.onSubmit(this.state.inputValue);
-    this.setState({ inputValue: '' });
+    onSubmit(inputValue);
+    setInputValue('');
   };
 
-  render() {
-    return (
-      <SearchbarStyled>
-        <SearchbarForm onSubmit={this.onSubmit}>
-          <SearchbarBtn type="submit" className="button">
-            <BsSearch />
-          </SearchbarBtn>
+  return (
+    <SearchbarStyled>
+      <SearchbarForm onSubmit={onSubmitSerch}>
+        <SearchbarBtn type="submit" className="button">
+          <BsSearch />
+        </SearchbarBtn>
 
-          <SearchbarInput
-            type="text"
-            name="search"
-            autoFocus
-            placeholder="Search images and photos"
-            value={this.state.inputValue}
-            onChange={this.onChange}
-          />
-        </SearchbarForm>
-      </SearchbarStyled>
-    );
-  }
+        <SearchbarInput
+          type="text"
+          name="search"
+          autoFocus
+          placeholder="Search images and photos"
+          value={inputValue}
+          onChange={onChange}
+        />
+      </SearchbarForm>
+    </SearchbarStyled>
+  );
 }
 
 export default Searchbar;
