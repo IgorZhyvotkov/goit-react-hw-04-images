@@ -22,7 +22,6 @@ function App() {
   const [page, setPage] = useState(1);
   const [findingImg, setFindingImg] = useState([]);
   const [status, setStatus] = useState(STATUS.IDLE);
-  const [errorM, setErrorM] = useState(null);
   const [totalPages, setTotalPages] = useState(0);
   const per_page = 12;
 
@@ -33,7 +32,7 @@ function App() {
     const fetch = async () => {
       try {
         setStatus(STATUS.PENDING);
-        
+
         const images = await getImages({ searchValue, page, per_page });
 
         if (!images.hits.length) {
@@ -42,16 +41,13 @@ function App() {
         setFindingImg(prevState => [...prevState, ...images.hits]);
         setTotalPages(Math.ceil(images.totalHits / per_page));
         setStatus(STATUS.RESOLVED);
-        setErrorM(null);
-
       } catch (error) {
-        setErrorM(errorM);
         setStatus(STATUS.REJECTED);
         toast.error(error.message);
       }
     };
     fetch();
-  }, [searchValue, page, errorM]);
+  }, [searchValue, page]);
 
   const onSearchSubmit = inputValue => {
     setSearchValue(inputValue);
@@ -65,48 +61,24 @@ function App() {
 
   const showBtn = findingImg.length !== 0 && page < totalPages;
 
-  if (status === STATUS.IDLE) {
-    return (
-      <Container>
-        <Searchbar onSubmit={onSearchSubmit} />
-        <ToastContainer autoClose={1500} />
-      </Container>
-    );
-  }
-
-  if (status === STATUS.PENDING) {
-    return (
-      <ColorRing
-        visible={true}
-        height="80"
-        width="80"
-        ariaLabel="blocks-loading"
-        wrapperStyle={{}}
-        wrapperClass="blocks-wrapper"
-        colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
-      />
-    );
-  }
-
-  if (status === STATUS.RESOLVED) {
-    return (
-      <Container>
-        <Searchbar onSubmit={onSearchSubmit} />
-        <ImageGallery searchValue={searchValue} findingImg={findingImg} />
-        {showBtn && <Button onBtnClick={loadMore} />}
-        <ToastContainer autoClose={1500} />
-      </Container>
-    );
-  }
-
-  if (status === STATUS.REJECTED) {
-    return (
-      <Container>
-        <Searchbar onSubmit={onSearchSubmit} />
-        <ToastContainer autoClose={1500} />
-      </Container>
-    );
-  }
+  return (
+    <Container>
+      <Searchbar onSubmit={onSearchSubmit} />
+      <ImageGallery findingImg={findingImg} />
+      {status === STATUS.PENDING && (
+        <ColorRing
+          visible={true}
+          height="80"
+          width="80"
+          ariaLabel="blocks-loading"
+          wrapperStyle={{}}
+          wrapperClass="blocks-wrapper"
+          colors={['#e15b64', '#f47e60', '#f8b26a', '#abbd81', '#849b87']}
+        />
+      )}
+      {showBtn && <Button onBtnClick={loadMore} />}
+      <ToastContainer autoClose={1500} />
+    </Container>
+  );
 }
-
 export default App;

@@ -7,17 +7,22 @@ const modalRoot = document.querySelector('#modal-root');
 
 function Modal({ onClose, url }) {
   useEffect(() => {
-    const hendleKeyDown = e => {
+    const handleKeyDown = e => {
       if (e.code === 'Escape') {
         onClose();
       }
     };
-    window.addEventListener('keydown', hendleKeyDown);
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
   }, [onClose]);
 
   const hendleBackdropClick = e => {
     if (e.currentTarget !== e.target) {
-      onClose();
+      return onClose();
     }
   };
 
